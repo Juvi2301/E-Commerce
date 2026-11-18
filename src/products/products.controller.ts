@@ -8,9 +8,14 @@ import {
   Param,
 } from '@nestjs/common';
 
+import { JoiValidationPipe } from '../common/pipes/joi-validation.pipe.js';
 import { ProductsService } from './products.service.js';
 import { CreateProductDto } from './dto/create-product.dto.js';
 import { UpdateProductDto } from './dto/update-product.dto.js';
+import {
+  createProductSchema,
+  updateProductSchema,
+} from './validations/product.validation.js';
 
 @Controller('products')
 export class ProductsController {
@@ -19,7 +24,9 @@ export class ProductsController {
   ) {}
 
   @Post()
-  create(@Body() dto: CreateProductDto) {
+  create(
+    @Body(new JoiValidationPipe(createProductSchema)) dto: CreateProductDto,
+  ) {
     return this.productsService.create(dto);
   }
 
@@ -36,7 +43,7 @@ export class ProductsController {
   @Patch(':id')
   update(
     @Param('id') id: string,
-    @Body() dto: UpdateProductDto,
+    @Body(new JoiValidationPipe(updateProductSchema)) dto: UpdateProductDto,
   ) {
     return this.productsService.update(id, dto);
   }
